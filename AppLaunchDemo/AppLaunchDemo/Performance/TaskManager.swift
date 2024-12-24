@@ -7,10 +7,10 @@
 
 import Foundation
 
-// 按组执行异步任务
+// Execute asynchronous tasks by group.
 func executeTasksConcurrently(tasks: [@Sendable () async -> Void]) async {
     await withTaskGroup(of: Void.self) { group in
-        // 将每个任务闭包添加到任务组中
+        // Add each task closure to the task group.
         for task in tasks {
             group.addTask {
                 await task()
@@ -19,7 +19,7 @@ func executeTasksConcurrently(tasks: [@Sendable () async -> Void]) async {
     }
 }
 
-// 执行低优先级异步任务
+// Execute low-priority asynchronous tasks.
 func performLowPriorityTasks(tasks: [@Sendable () async -> Void], withTimeLimit: Double? = nil) {
     for task in tasks {
         Task.detached(priority: .background) {
@@ -55,7 +55,7 @@ func taskgroupDemo() {
         print("Task Five Completed")
     }
     
-    // 低优先级示例函数
+    // low-priority asynchronous function
     var backgroundTasks = [@Sendable () async -> Void]()
     
     backgroundTasks.append {
@@ -75,10 +75,10 @@ func taskgroupDemo() {
         print("Background Task Four Executed")
     }
     
-    // MARK: 开始执行任务
-    // 低优先级任务
+    // MARK: Execute task begin
+    // low-priority task
     performLowPriorityTasks(tasks: backgroundTasks)
-    // 分组执行
+    // group task
     Task {
         await executeTasksConcurrently(tasks: tasks)
         print("first group of tasks completed.")

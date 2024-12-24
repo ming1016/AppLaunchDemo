@@ -13,7 +13,7 @@ final class CalculationViewModel {
     var results: [Int: UInt64] = [:]
     var isCalculating = false
     
-    // 未优化版本：每次都重新计算
+    // Unoptimized version: Recalculate every time.
     func calculateWithoutCache(numbers: [Int]) {
         results.removeAll()
         for num in numbers {
@@ -21,7 +21,7 @@ final class CalculationViewModel {
         }
     }
     
-    // 优化版本：使用缓存
+    // Optimized version: Use caching.
     private var cache: [Int: UInt64] = [:]
     func calculateWithCache(numbers: [Int]) {
         results.removeAll()
@@ -36,7 +36,7 @@ final class CalculationViewModel {
         }
     }
     
-    // 计算斐波那契数列(计算密集型操作)
+    // Calculate the Fibonacci sequence (compute-intensive operation).
     private func fibonacci(_ n: Int) -> UInt64 {
         if n <= 1 { return UInt64(n) }
         var a: UInt64 = 0
@@ -68,7 +68,7 @@ struct TaskCaseCacheView: View {
     @State private var viewModel = CalculationViewModel()
     @State private var selectedNumbers: Set<Int> = []
 
-    private let numbers = Array(35...42) // 选择较大的数以显示性能差异
+    private let numbers = Array(35...42) // Choose a larger number to demonstrate the performance difference.
     
     var body: some View {
         VStack(spacing: 20) {
@@ -84,7 +84,7 @@ struct TaskCaseCacheView: View {
             .border(Color.gray.opacity(0.2))
             
             VStack(spacing: 10) {
-                Text("选择要计算的斐波那契数：")
+                Text("Choose the Fibonacci number to calculate：")
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 44))], spacing: 8) {
                     ForEach(numbers, id: \.self) { number in
                         Button(String(number)) {
@@ -101,12 +101,12 @@ struct TaskCaseCacheView: View {
             }
             
             HStack(spacing: 20) {
-                Button("不使用缓存计算(卡顿)") {
+                Button("No cache") {
                     viewModel.calculateWithoutCache(numbers: Array(selectedNumbers))
                 }
                 .buttonStyle(.bordered)
                 
-                Button("使用缓存计算(流畅)") {
+                Button("Cached") {
                     viewModel.calculateWithCache(numbers: Array(selectedNumbers))
                 }
                 .buttonStyle(.bordered)

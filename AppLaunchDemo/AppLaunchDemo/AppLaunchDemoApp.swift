@@ -12,7 +12,7 @@ import AppIntents
 
 @main
 struct AppLaunchDemoApp: App {
-    // 启动时间打点
+    // Mark launch time
     private let launchStartTime = DispatchTime.now()
     private let signpostID = OSSignpostID(log: OSLog.default)
     private let log = OSLog(subsystem: Bundle.main.bundleIdentifier!, category: "Launch")
@@ -32,31 +32,31 @@ struct AppLaunchDemoApp: App {
                     }
                     scheduleAppRefresh()
                     
-                    // 查看整体从进程创建到主界面加载完成时间
+                    // Process to main view loaded time
                     if let processStartTime = Perf.getProcessRunningTime() {
-                        // 主界面加载完成，记录终点
+                        // Main view loaded, marked
                         let launchEndTime = DispatchTime.now()
                         let launchTime = Double(launchEndTime.uptimeNanoseconds - launchStartTime.uptimeNanoseconds) / 1_000_000_000
                         
                         // Pre-main
                         print("Pre-main : \(String(format: "%.2f", (processStartTime - launchTime))) 秒")
                     } else {
-                        print("无法获取进程创建时间")
+                        print("Can't get process create time.")
                     }
                     
-                    // 任务示例
+                    // Case Demo
                     TaskCase.bad()
 //                    TaskCase.good()
                     
-                    // 任务管理器示例
+                    // Task manager
                     taskgroupDemo()
                     
                     if let processStartTime = Perf.getProcessRunningTime() {
                         // Post-main
-                        print("进程创建到进入主界面时间: \(String(format: "%.2f", processStartTime)) 秒")
+                        print("Process create to main view time: \(String(format: "%.2f", processStartTime)) 秒")
                     }
                     
-                    // 记录启动结束
+                    // Record launch end
                     os_signpost(.end, log: log, name: "Launch", signpostID: signpostID)
                 }
         }
@@ -65,21 +65,21 @@ struct AppLaunchDemoApp: App {
     // MARK: - Background Task
     func scheduleAppRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: "com.starming.fetch")
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 60 * 15) // 最早15分钟后运行
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 60 * 15) // The earliest run is 15 minutes after.
         do {
             try BGTaskScheduler.shared.submit(request)
         } catch {
-            print("后台任务请求失败: \(error)")
+            print("Background task request failed: \(error)")
         }
     }
     func handleAppRefresh(task: BGAppRefreshTask) {
-        // 确保任务在有限的时间内完成
+        // Ensure task completed in time
         task.expirationHandler = {
-            // 如果任务时间即将耗尽，取消任务
+            // If the task time is about to run out, cancel the task.
             task.setTaskCompleted(success: false)
         }
         
-        // 模拟数据获取
-        print("后台任务开始，获取数据")
+        // Simulated data retrieval
+        print("Background task started, retrieving data.")
     }
 }

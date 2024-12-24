@@ -7,15 +7,15 @@
 
 import Foundation
 
-// 性能工具
+// Performance tools
 struct Perf {
     static func showTime(_ des: String = "") {
         if let processStartTime = Perf.getProcessRunningTime() {
-            print("进程创建到\(des)时间: \(String(format: "%.2f", processStartTime)) 秒")
+            print("Process create to \(des) time: \(String(format: "%.2f", processStartTime)) seconds")
         }
     }
     
-    // 通过 sysctl 获取进程创建开始到当前的时间
+    // sysctl get process create to current time
     static func getProcessRunningTime() -> Double? {
         var kinfo = kinfo_proc()
         var size = MemoryLayout<kinfo_proc>.stride
@@ -26,7 +26,7 @@ struct Perf {
         }
 
         guard result == 0 else {
-            print("sysctl 调用失败，错误码: \(result)")
+            print("sysctl call failed, error code: \(result)")
             return nil
         }
 

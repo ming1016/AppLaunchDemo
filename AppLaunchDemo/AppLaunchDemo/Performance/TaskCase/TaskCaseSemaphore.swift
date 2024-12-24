@@ -12,23 +12,23 @@ extension TaskCase {
         let semaphore = DispatchSemaphore(value: 0)
         
         DispatchQueue.global().async {
-            // 模拟耗时操作
+            // Simulate a time-consuming operation.
             sleep(2)
             semaphore.signal()
         }
         
-        // 等待信号量，会阻塞主线程
+        // Wait for a semaphore, which will block the main thread.
         semaphore.wait()
-        Perf.showTime("未优化信号量")
+        Perf.showTime("Unoptimized semaphore.")
     }
     
     static func goodSemaphore() {
         Task {
             await performAsyncTask()
-            Perf.showTime("异步优化信号量")
+            Perf.showTime("Asynchronously optimize the semaphore.")
         }
         
-        // 异步任务函数
+        // Asynchronous task function.
         @Sendable
         func performAsyncTask() async {
             try? await Task.sleep(for: .seconds(2))

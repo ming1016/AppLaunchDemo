@@ -16,15 +16,15 @@ struct Particle: Identifiable {
     var size: CGFloat
 }
 
-// 方案1：使用 @unchecked Sendable
 @MainActor
 final class ParticleSystem: ObservableObject, @unchecked Sendable {
     @Published var particles: [Particle] = []
     private var timer: Timer?
     private var cancellables = Set<AnyCancellable>()
     
+    // Not optimized.
     func createParticles(at position: CGPoint, count: Int) {
-        // 在主线程创建大量粒子(会导致卡顿)
+        // Creating a large number of particles on the main thread (which may cause stuttering).
         for _ in 0..<count {
             let particle = Particle(
                 position: position,
@@ -43,9 +43,10 @@ final class ParticleSystem: ObservableObject, @unchecked Sendable {
         }
     }
     
+    // optimized
     @MainActor
     func createParticlesAsync(at position: CGPoint, count: Int) async {
-        // 创建静态函数来生成粒子数据
+        // Create a static function to generate particle data.
         let newParticles = await Task.detached(priority: .userInitiated) {
             return await Self.generateParticles(at: position, count: count)
         }.value
@@ -53,7 +54,7 @@ final class ParticleSystem: ObservableObject, @unchecked Sendable {
         particles.append(contentsOf: newParticles)
     }
     
-    // 静态函数用于生成粒子
+    // Static function to generate particles.
     private static func generateParticles(at position: CGPoint, count: Int) -> [Particle] {
         return (0..<count).map { _ in
             Particle(
@@ -73,7 +74,7 @@ final class ParticleSystem: ObservableObject, @unchecked Sendable {
     }
     
     func startAnimation() {
-        // 使用 Timer.publish 替代 Timer.scheduledTimer
+        // Use `Timer.publish` instead of `Timer.scheduledTimer`.
         Timer.publish(every: 1/60, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
@@ -87,7 +88,7 @@ final class ParticleSystem: ObservableObject, @unchecked Sendable {
             var newParticle = particle
             newParticle.position.x += particle.velocity.x
             newParticle.position.y += particle.velocity.y
-            // 移除超出屏幕的粒子
+            // Remove particles that are off-screen.
             if newParticle.position.y > 1000 || newParticle.position.x < -100 || newParticle.position.x > 500 {
                 return nil
             }
@@ -108,7 +109,7 @@ struct TaskCaseAnimationView: View {
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
             
-            // 绘制所有粒子
+            // Draw all particles.
             ForEach(particleSystem.particles) { particle in
                 Circle()
                     .fill(particle.color)
@@ -119,8 +120,8 @@ struct TaskCaseAnimationView: View {
             VStack {
                 Spacer()
                 HStack(spacing: 20) {
-                    // 会卡顿的版本
-                    Button("创建1000个粒子(卡顿)") {
+                    // The version that causes stuttering.
+                    Button("1000 particles (stuttering).") {
                         particleSystem.createParticles(
                             at: CGPoint(x: 200, y: 400),
                             count: 1000
@@ -129,8 +130,8 @@ struct TaskCaseAnimationView: View {
                     .buttonStyle(.bordered)
                     .foregroundColor(.white)
                     
-                    // 不会卡顿的版本
-                    Button("异步创建1000个粒子") {
+                    // The version that does not cause stuttering.
+                    Button("Asynchronously 1000 particles.") {
                         Task {
                             await particleSystem.createParticlesAsync(
                                 at: CGPoint(x: 200, y: 400),

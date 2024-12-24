@@ -13,7 +13,7 @@ struct CardItem: Identifiable {
     let color: Color
 }
 
-// 用户数据模型
+// User data model.
 struct User: Codable, Identifiable {
     let id: Int
     let name: String
@@ -35,7 +35,7 @@ struct TaskCaseUIUpdateView: View {
     var body: some View {
         VStack(spacing: 20) {
             if isLoading {
-                ProgressView("正在生成卡片...")
+                ProgressView("Generating card...")
             }
             
             if let error = errorMessage {
@@ -55,20 +55,20 @@ struct TaskCaseUIUpdateView: View {
             }
             
             HStack(spacing: 20) {
-                // 同步更新UI - 会卡顿
-                Button("同步更新(会卡顿)") {
+                // Synchronously update UI – causes stuttering.
+                Button("Synchronously(stuttering)") {
                     updateCardsSynchronously()
                 }
                 
-                // 异步更新UI - 推荐方式
-                Button("异步更新(推荐)") {
+                // Asynchronously update UI – recommended approach.
+                Button("Asynchronously") {
                     Task {
                         await updateCardsAsynchronously()
                     }
                 }
                 
-                // 清空按钮
-                Button("清空") {
+                // Clear button
+                Button("Clear") {
                     cards.removeAll()
                 }
             }
@@ -86,7 +86,7 @@ struct TaskCaseUIUpdateView: View {
         .frame(height: 300)
     }
     
-    // 卡片视图组件
+    // Card view component.
     struct CardView: View {
         let item: CardItem
         
@@ -101,24 +101,24 @@ struct TaskCaseUIUpdateView: View {
         }
     }
     
-    // 同步更新 - 会阻塞主��程
+    // Synchronously update – will block the main thread.
     private func updateCardsSynchronously() {
-        // 一次性生成1000个卡片
+        // Generate 1000 cards at once.
         var newCards: [CardItem] = []
         for i in 1...1000 {
-            // 模拟复杂的UI计算
-            Thread.sleep(forTimeInterval: 0.001) // 每张卡片增加1毫秒延迟
+            // Simulate complex UI calculations.
+            Thread.sleep(forTimeInterval: 0.001) // Add a 1 millisecond delay for each card.
             let color = Color(
                 red: .random(in: 0...1),
                 green: .random(in: 0...1),
                 blue: .random(in: 0...1)
             )
-            newCards.append(CardItem(title: "卡片 #\(i)", color: color))
+            newCards.append(CardItem(title: "Card #\(i)", color: color))
         }
         cards = newCards
     }
     
-    // 异步更新 - 推荐使用
+    // Asynchronous update – recommended usage.
     @MainActor
     private func updateCardsAsynchronously() async {
         isLoading = true
@@ -126,7 +126,7 @@ struct TaskCaseUIUpdateView: View {
         
         do {
             let newCards = try await withThrowingTaskGroup(of: [CardItem].self) { group in
-                // 分批处理，每批100个卡片
+                // Process in batches, 100 cards per batch.
                 let batchSize = 100
                 let totalCards = 1000
                 var allCards: [CardItem] = []
@@ -137,20 +137,20 @@ struct TaskCaseUIUpdateView: View {
                         let end = min(batchStart + batchSize, totalCards)
                         
                         for i in (batchStart + 1)...end {
-                            // 模拟复杂的UI计算
-                            try await Task.sleep(nanoseconds: 1_000_000) // 1毫秒
+                            // Simulate complex UI calculations.
+                            try await Task.sleep(nanoseconds: 1_000_000) // 1 millisecond.
                             let color = Color(
                                 red: .random(in: 0...1),
                                 green: .random(in: 0...1),
                                 blue: .random(in: 0...1)
                             )
-                            batchCards.append(CardItem(title: "卡片 #\(i)", color: color))
+                            batchCards.append(CardItem(title: "Card #\(i)", color: color))
                         }
                         return batchCards
                     }
                 }
                 
-                // 收集所有批次的结果
+                // Collect the results of all batches.
                 for try await batchCards in group {
                     allCards.append(contentsOf: batchCards)
                 }
@@ -158,12 +158,12 @@ struct TaskCaseUIUpdateView: View {
                 return allCards
             }
             
-            // 更新UI
+            // Update UI
             self.cards = newCards
             self.isLoading = false
             
         } catch {
-            self.errorMessage = "生成卡片失败: \(error.localizedDescription)"
+            self.errorMessage = "Failed to generate cards: \(error.localizedDescription)"
             self.isLoading = false
         }
     }

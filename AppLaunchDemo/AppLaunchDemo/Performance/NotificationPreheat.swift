@@ -12,18 +12,18 @@ import SwiftUI
 struct NotificationPreheatDemoView: View {
     var body: some View {
         VStack {
-            Button("请求通知授权") {
+            Button("Request notification authorization.") {
                 NotificationService.shared.requestAuthorization { granted in
                     if granted {
-                        print("授权成功")
+                        print("Authorization successful.")
                     } else {
-                        print("授权失败")
+                        print("Authorization failed.")
                     }
                 }
             }
             
-            Button("安排通知") {
-                NotificationService.shared.scheduleNotification(title: "提醒", body: "这是一个通知示例", timeInterval: 5)
+            Button("Schedule notification.") {
+                NotificationService.shared.scheduleNotification(title: "Reminder", body: "This is a notification demo", timeInterval: 5)
             }
         }
         .padding()

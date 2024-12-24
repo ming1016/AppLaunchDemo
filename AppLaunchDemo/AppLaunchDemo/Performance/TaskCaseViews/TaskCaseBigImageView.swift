@@ -14,14 +14,14 @@ final class ImageProcessor {
     var processedImages: [UIImage] = []
     var isProcessing = false
     
-    // 同步处理图片(会阻塞主线程)
+    // Synchronously process images (which blocks the main thread).
     func processImagesSynchronously() {
-        // 模拟加载多张大图
+        // Simulate loading multiple large images.
         let imageCount = 10
         processedImages.removeAll()
         
         for i in 0..<imageCount {
-            // 创建一个大尺寸的渐变图片
+            // Create a large-sized gradient image.
             let size = CGSize(width: 2000, height: 2000)
             let renderer = UIGraphicsImageRenderer(size: size)
             
@@ -44,26 +44,26 @@ final class ImageProcessor {
                     options: []
                 )
                 
-                // 模拟耗时操作
+                // Simulate a time-consuming operation.
                 Thread.sleep(forTimeInterval: 0.2)
             }
             
-            // 处理图片 - 调整大小
+            // Process image – Resize.
             let processedImage = processImage(image)
             processedImages.append(processedImage)
         }
     }
     
-    // 异步处理图片
+    // Asynchronously process the image.
     func processImagesAsync() async {
         isProcessing = true
         processedImages.removeAll()
         
-        // 创建和处理图片的任务数组
+        // create and process an array of image tasks asynchronously
         async let images = withTaskGroup(of: UIImage.self) { group in
             for i in 0..<10 {
                 group.addTask {
-                    // 创建大尺寸渐变图片
+                    // Create a large-sized gradient image.
                     let size = CGSize(width: 2000, height: 2000)
                     let renderer = UIGraphicsImageRenderer(size: size)
                     
@@ -86,7 +86,7 @@ final class ImageProcessor {
                             options: []
                         )
                         
-                        // 模拟耗时操作
+                        // Simulate a time-consuming operation.
                         Thread.sleep(forTimeInterval: 0.2)
                     }
                     
@@ -101,7 +101,7 @@ final class ImageProcessor {
             return results
         }
         
-        // 等待所有图片处理完成并更新UI
+        // Wait for all image processing to complete and update the UI.
         processedImages = await images
         isProcessing = false
     }
@@ -137,12 +137,12 @@ struct TaskCaseBigImageView: View {
             .padding()
             
             VStack(spacing: 20) {
-                Button("同步处理图片(会卡顿)") {
+                Button("Synchronously(stuttering).") {
                     processor.processImagesSynchronously()
                 }
                 .buttonStyle(.bordered)
                 
-                Button("异步处理图片") {
+                Button("Asynchronously") {
                     Task {
                         await processor.processImagesAsync()
                     }

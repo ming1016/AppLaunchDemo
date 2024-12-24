@@ -9,15 +9,15 @@ import Foundation
 
 struct TaskCase {
     static func bad() {
-        TaskCase.badLoadFile() // 读取文件
-        TaskCase.badSemaphore() // 信号量
-        TaskCase.badJSONDecode() // JSON 解析
+        TaskCase.badLoadFile() // Load file
+        TaskCase.badSemaphore() // Semaphore
+        TaskCase.badJSONDecode() // JSON parse
     }
     
     static func good() {
-        TaskCase.goodLoadFile() // 读取文件
-        TaskCase.goodSemaphore() // 信号量
-        TaskCase.goodJSONDecode() // JSON 解析
+        TaskCase.goodLoadFile() // Load file
+        TaskCase.goodSemaphore() // Semaphore
+        TaskCase.goodJSONDecode() // JSON parse
     }
     
 }

@@ -8,18 +8,18 @@
 import Foundation
 
 extension TaskCase {
-    // 同步读取方式 - 会阻塞主线程
+    // Synchronous reading method – will block the main thread.
     static func badLoadFile() {
-        // 模拟耗时操作，减少循环次数并添加延迟
+        // Simulate a time-consuming operation by reducing the number of iterations and adding delays.
         var content = ""
         for i in 1...10 {
-            content += "这是第\(i)行内容\n"
-            Thread.sleep(forTimeInterval: 0.3) // 每次循环暂停0.3秒
+            content += "This is the content of line \(i)\n"
+            Thread.sleep(forTimeInterval: 0.3) // Pause for 0.3 seconds on each iteration.
         }
-        Perf.showTime("未优化文件读取")
+        Perf.showTime("Unoptimized file reading.")
     }
     
-    // 异步读取方式 - 推荐使用
+    // Asynchronous reading method – recommended usage.
     static func goodLoadFile() {
         Task {
             do {
@@ -27,20 +27,20 @@ extension TaskCase {
                     DispatchQueue.global().async {
                         var content = ""
                         for i in 1...10 {
-                            content += "这是第\(i)行内容\n"
-                            Thread.sleep(forTimeInterval: 0.3) // 每次循环暂停0.3秒
+                            content += "This is the content of line \(i)\n"
+                            Thread.sleep(forTimeInterval: 0.3) // Pause for 0.3 seconds on each iteration.
                         }
                         continuation.resume(returning: content)
                     }
                 }
                 
-                // 更新UI要在主线程
+                // UI updates must be performed on the main thread.
                 await MainActor.run {
-                    Perf.showTime("异步优化文件读取")
+                    Perf.showTime("Asynchronously optimize file reading.")
                 }
             } catch {
                 await MainActor.run {
-                    print("读取文件失败")
+                    print("Failed to read the file.")
                 }
             }
         }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-// 数据模型
+// Data model
 struct TCItem: Codable, Identifiable {
     let id: Int
     let title: String
@@ -21,23 +21,23 @@ extension TaskCase {
             _ = try JSONDecoder().decode([TCItem].self, from: jsonData)
             
         } catch {
-            print("解析失败: \(error)")
+            print("parse failed: \(error)")
         }
-        Perf.showTime("未优化JSON解析")
+        Perf.showTime("Unoptimized JSON parsing.")
     }
     
     static func goodJSONDecode() {
         Task.detached(priority: .background) {
             do {
                 _ = try await parseJSON()
-                Perf.showTime("异步优化JSON解析")
+                Perf.showTime("Asynchronously optimize JSON parsing.")
             } catch {
-                print("解析失败: \(error)")
+                print("Parse failed: \(error)")
             }
         }
     }
     
-    // 异步解析JSON
+    // Asynchronously parse JSON.
     @Sendable
     static func parseJSON() async throws -> [TCItem] {
         let jsonData = TaskCase.generateLargeJSON()
@@ -49,8 +49,8 @@ extension TaskCase {
         for i in 0...10000 {
             items.append([
                 "id": i,
-                "title": "标题 \(i)",
-                "description": "这是一段很长的描述文本，用来模拟实际场景中的数据量 \(i)"
+                "title": "Title \(i)",
+                "description": "This is a long descriptive text used to simulate the data volume in real-world scenarios \(i)"
             ])
         }
         return try! JSONSerialization.data(withJSONObject: items)
