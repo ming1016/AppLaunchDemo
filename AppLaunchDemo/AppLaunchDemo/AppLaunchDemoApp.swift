@@ -39,7 +39,7 @@ struct AppLaunchDemoApp: App {
                         let launchTime = Double(launchEndTime.uptimeNanoseconds - launchStartTime.uptimeNanoseconds) / 1_000_000_000
                         
                         // Pre-main
-                        print("Pre-main : \(String(format: "%.2f", (processStartTime - launchTime))) 秒")
+                        print("Pre-main : \(String(format: "%.2f", (processStartTime - launchTime))) seconds")
                     } else {
                         print("Can't get process create time.")
                     }
@@ -53,7 +53,7 @@ struct AppLaunchDemoApp: App {
                     
                     if let processStartTime = Perf.getProcessRunningTime() {
                         // Post-main
-                        print("Process create to main view time: \(String(format: "%.2f", processStartTime)) 秒")
+                        print("Process create to main view time: \(String(format: "%.2f", processStartTime)) seconds")
                     }
                     
                     // Record launch end

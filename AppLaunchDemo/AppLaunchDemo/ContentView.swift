@@ -37,21 +37,21 @@ struct HomeView: View {
         ScrollView {
             TaskCaseUIUpdateView(isBad: false)
                 .onAppear {
-                    Perf.showTime("UI更新视图")
+                    Perf.showTime("UI update view")
                 }
 //            TaskCaseAnimationView(isBad: false)
 //                .onAppear {
-//                    Perf.showTime("动画视图")
+//                    Perf.showTime("Animation View")
 //                }
             TaskCaseBigImageView(isBad: false)
                 .onAppear {
-                    Perf.showTime("大图处理视图")
+                    Perf.showTime("Big image view")
                 }
             TaskCaseCacheView()
-            // 异步执行，计算量大会影响主线程
+            // Asynchronous execution, but a large computational load may impact the main thread.
 //            TaskCasePriorityView(isBad: false)
 //                .onAppear {
-//                    Perf.showTime(des: "优先级视图")
+//                    Perf.showTime(des: "Priority view.")
 //                }
         }
     } // end body
