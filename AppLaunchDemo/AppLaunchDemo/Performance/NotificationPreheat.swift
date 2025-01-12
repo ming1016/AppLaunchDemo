@@ -23,7 +23,7 @@ struct NotificationPreheatDemoView: View {
             }
             
             Button("Schedule notification.") {
-                NotificationService.shared.scheduleNotification(title: "Reminder", body: "This is a notification demo", timeInterval: 5)
+                NotificationService.shared.scheduleNotification(title: "Preload Lib", body: "This is a notification demo", timeInterval: 5)
             }
         }
         .padding()
@@ -64,22 +64,24 @@ class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
     }
     
-    // 处理接收到的通知
+    // Deal with recieved notification
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        // 在应用程序前台时处理通知
-        print("接收到通知：\(notification.request.content.title)")
-        preloadSystemLibraries()
-        completionHandler([.sound])
+        // Processing notifications in the foreground of the App
+        print("Recieved notification：\(notification.request.content.title)")
+        if notification.request.content.title == "Preload Lib" {
+            preloadSystemLibraries()
+            completionHandler([.sound])
+        }
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        // 处理用户点击通知的行为
-        print("用户点击了通知：\(response.notification.request.content.userInfo)")
+        // Processing user click notification behavior
+        print("User clicked notification: \(response.notification.request.content.userInfo)")
         completionHandler()
     }
     
     private func preloadSystemLibraries() {
-        // 使用 dlopen 提前加载主 App 常用的系统动态库
+        // Use dlopen preload main App common used system lib
         let libraries = [
             "/usr/lib/libobjc.A.dylib",
             "/System/Library/Frameworks/UIKit.framework/UIKit",
